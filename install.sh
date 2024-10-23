@@ -1,5 +1,6 @@
 #!/bin/sh
-zshrc() {
+install() {
     cat .zshrc > $HOME/.zshrc
+    cat .vimrc > $HOME/.vimrc
 }
-zshrc
+install

@@ -62,3 +62,9 @@ source $ZSH/oh-my-zsh.sh
 export PATH=/usr/local/sbin:$PATH
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH=/usr/local/Cellar/mysql/5.6.17_1/bin:$PATH
+
+# remove ls and directory completion highlight color (must stay after oh-my-zsh is sourced)
+# https://josh-ops.com/posts/github-codespaces-powerlevel10k/
+_ls_colors=':ow=01;33'
+zstyle ":completion:*:default" list-colors "${(s.:.)_ls_colors}"
+LS_COLORS+=$_ls_colors

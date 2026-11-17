@@ -1,14 +1,26 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
-
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# ~/.zshrc (symlinked from ~/dotfiles by install.sh)
+# Path to your oh-my-zsh configuration.
+ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
 ZSH_THEME="robbyrussell"
 
-alias p="python3 -W ignore"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Editor: Cursor/VS Code terminals set GIT_EDITOR to themselves, which beats core.editor.
+unset GIT_EDITOR
+export EDITOR=vim
+export VISUAL=vim
+
+# Codex Alias
+# alias cc="claude --dangerously-skip-permissions"
+alias cc="codex --dangerously-bypass-approvals-and-sandbox"
+
+alias ppp="pnpm pp"
+
+# Peon Ping
+export PEON_RELAY_HOST=localhost
+alias peon="bash $HOME/.claude/hooks/peon-ping/peon.sh"
 
 # Aliases
 alias c='clear'
@@ -21,10 +33,9 @@ alias szsh='source ~/.zshrc'
 alias j='jump'
 alias histg='history | grep '
 alias histf='history | fzf '
+alias cafe='caffeinate'
 
-alias grepex='grep --exclude-dir=node_modules -rni '
-
-# Git shortcuts
+# git stuff
 alias gs='git status'
 alias gaf='git add $(fzf)'
 alias gd='git diff'
@@ -36,14 +47,30 @@ alias glp='git log -p'
 alias glpr='git log --pretty=oneline'
 alias glg="git log --graph --pretty=format':%C(yellow)%h%Cblue%d%Creset %s %C(white) %an, %ar%Creset'"
 alias gb='git branch'
-alias gb='git branch --list'
 alias gsl='git stash list'
 alias gcp='git cherry-pick'
 alias gpo='git push origin'         # push.default = current
 alias gundo='git reset HEAD~'
 alias gpum='git pull upstream master'
 
-# `cd` shortcuts
+#tmux stuff
+alias tm='tmux'
+
+unalias gss 2>/dev/null
+gss() {
+    git stash show -p stash@{$1}
+}
+
+gsa() {
+    git stash apply stash@{$1}
+}
+
+unalias gsd 2>/dev/null
+gsd() {
+    git stash drop stash@{$1}
+}
+
+# because typing 'cd' is A LOT of work!!
 alias ..='cd ../'
 alias ...='cd ../../'
 alias ....='cd ../../../'
@@ -54,14 +81,14 @@ HISTSIZE=100000
 SAVEHIST=100000
 HISTFILE=~/.zsh_history
 
-plugins=(jump)
+export PROMPT='$PROMPT$(git-radar --zsh --fetch) '
+
+plugins=(jump sudo sublime)
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-export PATH=/usr/local/sbin:$PATH
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=/usr/local/Cellar/mysql/5.6.17_1/bin:$PATH
+# Peon Ping tab completion
+[ -f "$HOME/.claude/hooks/peon-ping/completions.bash" ] && source "$HOME/.claude/hooks/peon-ping/completions.bash"
 
 # remove ls and directory completion highlight color (must stay after oh-my-zsh is sourced)
 # https://josh-ops.com/posts/github-codespaces-powerlevel10k/

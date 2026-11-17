@@ -9,7 +9,7 @@ log() { printf '[dotfiles] %s\n' "$*"; }
 # --- system packages (only where apt + sudo exist, e.g. Ona Ubuntu images) ---
 if command -v apt-get >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
   missing=()
-  for pkg in zsh vim fzf git curl; do
+  for pkg in zsh vim fzf git curl python3; do
     command -v "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
   done
   if [ ${#missing[@]} -gt 0 ]; then
@@ -36,15 +36,49 @@ for f in .zshrc .vimrc; do
   log "linked $f"
 done
 
-# --- Vundle + vim plugins ---
-if [ ! -d "$HOME/.vim/bundle/Vundle.vim" ]; then
-  log "installing Vundle"
-  git clone -q --depth=1 https://github.com/VundleVim/Vundle.vim.git "$HOME/.vim/bundle/Vundle.vim"
+# --- git: vim as editor (GIT_EDITOR is unset in .zshrc so this wins) ---
+git config --global core.editor vim
+log "git core.editor = vim"
+
+# --- Cursor / VS Code remote settings: stop auto port forwarding ---
+# Machine settings live on the remote, so they apply to this environment whichever client connects.
+merge_settings() {
+  local file="$1"
+  mkdir -p "$(dirname "$file")"
+  python3 - "$file" <<'PY'
+import json, sys, os
+path = sys.argv[1]
+data = {}
+if os.path.exists(path):
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except ValueError:
+        os.rename(path, path + ".bak")  # JSONC or broken; keep a copy, start fresh
+data.update({"remote.autoForwardPorts": False, "remote.restoreForwardedPorts": False})
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+PY
+}
+if command -v python3 >/dev/null 2>&1; then
+  for d in .cursor-server .vscode-server; do
+    merge_settings "$HOME/$d/data/Machine/settings.json"
+  done
+  log "disabled remote port auto-forwarding"
+else
+  log "python3 missing, skipped Cursor settings"
 fi
-if command -v vim >/dev/null 2>&1; then
-  log "installing vim plugins"
-  vim -E -s -u "$HOME/.vimrc" +PluginInstall +qall </dev/null >/dev/null 2>&1 || true
+
+# --- peon-ping (alias + completion already live in .zshrc, so --no-rc) ---
+if [ -d /workspaces ] && [ -w /workspaces ]; then PEON_SRC=/workspaces/peon-ping; else PEON_SRC="$HOME/peon-ping"; fi
+if [ -d "$PEON_SRC/.git" ]; then
+  git -C "$PEON_SRC" pull -q --ff-only || log "peon-ping pull failed, using existing checkout"
+else
+  git clone -q --depth=1 https://github.com/PeonPing/peon-ping "$PEON_SRC"
 fi
+log "installing peon-ping"
+(cd "$PEON_SRC" && ./install.sh --no-rc </dev/null) || log "peon-ping install failed, continuing"
 
 # --- make zsh the default shell ---
 if command -v zsh >/dev/null 2>&1; then

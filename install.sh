@@ -70,17 +70,6 @@ else
   log "python3 missing, skipped Cursor settings"
 fi
 
-# --- peon-ping (alias + completion already live in .zshrc, so --no-rc) ---
-if [ -d /workspaces ] && [ -w /workspaces ]; then PEON_SRC=/workspaces/peon-ping; else PEON_SRC="$HOME/peon-ping"; fi
-if [ -d "$PEON_SRC/.git" ]; then
-  git -C "$PEON_SRC" pull -q --ff-only || log "peon-ping pull failed, using existing checkout"
-else
-  git clone -q --depth=1 https://github.com/PeonPing/peon-ping "$PEON_SRC"
-fi
-log "installing peon-ping"
-mkdir -p "${CODEX_HOME:-$HOME/.codex}"   # peon only registers Codex hooks if this dir exists
-(cd "$PEON_SRC" && ./install.sh --no-rc </dev/null) || log "peon-ping install failed, continuing"
-
 # --- make zsh the default shell ---
 if command -v zsh >/dev/null 2>&1; then
   zsh_path="$(command -v zsh)"

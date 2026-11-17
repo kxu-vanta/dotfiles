@@ -18,10 +18,6 @@ alias cc="codex --dangerously-bypass-approvals-and-sandbox"
 
 alias ppp="pnpm pp"
 
-# Peon Ping
-export PEON_RELAY_HOST=localhost
-alias peon="bash $HOME/.claude/hooks/peon-ping/peon.sh"
-
 # Aliases
 alias c='clear'
 alias ls="ls -ltFh"
@@ -86,9 +82,6 @@ export PROMPT='$PROMPT$(git-radar --zsh --fetch) '
 plugins=(jump sudo sublime)
 
 source $ZSH/oh-my-zsh.sh
-
-# Peon Ping tab completion
-[ -f "$HOME/.claude/hooks/peon-ping/completions.bash" ] && source "$HOME/.claude/hooks/peon-ping/completions.bash"
 
 # remove ls and directory completion highlight color (must stay after oh-my-zsh is sourced)
 # https://josh-ops.com/posts/github-codespaces-powerlevel10k/

@@ -25,7 +25,8 @@ The script is safe to re-run: each step checks before it acts.
 3. **Dotfiles:** symlinks `.zshrc` and `.vimrc` into `$HOME`. An existing file is renamed to `<name>.pre-dotfiles` first.
 4. **Git editor:** runs `git config --global core.editor vim`. `.zshrc` also unsets `GIT_EDITOR` (Cursor/VS Code terminals set it to the IDE, which overrides `core.editor`) and exports `EDITOR=vim` and `VISUAL=vim`.
 5. **Cursor / VS Code:** sets `remote.autoForwardPorts` and `remote.restoreForwardedPorts` to `false` in the remote machine settings (`~/.cursor-server/data/Machine/settings.json` and `~/.vscode-server/...`). Other settings in those files are kept.
-6. **Default shell:** switches the login shell to zsh when `sudo` allows it.
+6. **Codex skills:** clones (or updates) `kxu-vanta/kxstack` into `~/.kxstack` and symlinks each folder in its `skills/` into `~/.codex/skills/`. Links to skills that were removed from kxstack are cleaned up. kxstack is private, so Ona's GitHub connection needs read access to it; if the clone fails, this step is skipped and the rest of the setup still runs.
+7. **Default shell:** switches the login shell to zsh when `sudo` allows it.
 
 ## Files
 

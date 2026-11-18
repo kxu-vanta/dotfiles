@@ -70,6 +70,34 @@ else
   log "python3 missing, skipped Cursor settings"
 fi
 
+# --- Codex skills from kxstack (private repo: needs Ona's GitHub credentials) ---
+KXSTACK_REPO="${KXSTACK_REPO:-https://github.com/kxu-vanta/kxstack.git}"
+KXSTACK_DIR="$HOME/.kxstack"
+if [ -d "$KXSTACK_DIR/.git" ]; then
+  GIT_TERMINAL_PROMPT=0 git -C "$KXSTACK_DIR" pull -q --ff-only || log "kxstack pull failed, using existing checkout"
+else
+  GIT_TERMINAL_PROMPT=0 git clone -q "$KXSTACK_REPO" "$KXSTACK_DIR" </dev/null \
+    || log "couldn't clone kxstack (check Ona's GitHub access to it), skipping Codex skills"
+fi
+if [ -d "$KXSTACK_DIR/skills" ]; then
+  SKILLS_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
+  mkdir -p "$SKILLS_DIR"
+  # drop links to skills that no longer exist in kxstack
+  for link in "$SKILLS_DIR"/*; do
+    [ -L "$link" ] && [ ! -e "$link" ] && case "$(readlink "$link")" in "$KXSTACK_DIR"/*) rm "$link" ;; esac
+  done
+  for s in "$KXSTACK_DIR"/skills/*/; do
+    [ -d "$s" ] || continue
+    name="$(basename "$s")"
+    if [ -e "$SKILLS_DIR/$name" ] && [ ! -L "$SKILLS_DIR/$name" ]; then
+      log "skipping skill $name: $SKILLS_DIR/$name already exists and isn't a link"
+      continue
+    fi
+    ln -sfn "${s%/}" "$SKILLS_DIR/$name"
+  done
+  log "linked Codex skills: $(ls "$KXSTACK_DIR/skills" | tr '\n' ' ')"
+fi
+
 # --- make zsh the default shell ---
 if command -v zsh >/dev/null 2>&1; then
   zsh_path="$(command -v zsh)"

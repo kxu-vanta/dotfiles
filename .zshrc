@@ -13,7 +13,6 @@ export EDITOR=vim
 export VISUAL=vim
 
 # Codex Alias
-# alias cc="claude --dangerously-skip-permissions"
 alias cc="codex --dangerously-bypass-approvals-and-sandbox"
 
 alias ppp="pnpm pp"

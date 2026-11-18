@@ -1,6 +1,6 @@
 # dotfiles
 
-My shell and editor setup for remote dev environments (Ona, Codespaces), applied automatically when an environment starts.
+My shell, editor and Codex setup for remote dev environments (Ona, Codespaces), applied automatically when an environment starts. Codex is the only coding agent it configures.
 
 ## Setup
 
@@ -33,7 +33,7 @@ The script is safe to re-run: each step checks before it acts.
 | File | Purpose |
 | --- | --- |
 | `install.sh` | Setup script, run automatically by Ona |
-| `.zshrc` | Oh My Zsh config, aliases, git helpers, editor variables |
+| `.zshrc` | Oh My Zsh config, aliases (including `cc` for Codex), git helpers, editor variables |
 | `.vimrc` | Leader key and key mappings |
 
 ## Troubleshooting
